@@ -1,0 +1,30 @@
+name: Build Windows fping (IPv6)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt update
+          sudo apt install -y mingw-w64 autoconf automake libtool
+
+      - name: Build fping (Windows static)
+        run: |
+          ./autogen.sh
+          CC=x86_64-w64-mingw32-gcc \
+          ./configure --enable-ipv6 --host=x86_64-w64-mingw32 LDFLAGS="-static"
+          make
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: fping-win64
+          path: src/fping.exe
+``
